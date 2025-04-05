@@ -47,8 +47,9 @@ CREATE TABLE INSCRIPCION (
 	FechaInicio DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
 	FechaFin AS (DATEADD(MONTH, CantidadMeses, FechaInicio)) PERSISTED,
 	Mensualidad INT NOT NULL DEFAULT 250,
+	Subtotal AS (Mensualidad * CantidadMeses) PERSISTED,
 	DescuentoID INT,
-	Total AS (Mensualidad * CantidadMeses) PERSISTED, 
+	Total DECIMAL(10,2) NOT NULL, 
 	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
 	FOREIGN KEY (ClienteID) REFERENCES CLIENTES(ClienteID),
 	FOREIGN KEY (DescuentoID) REFERENCES DESCUENTOS(DescuentoID)
