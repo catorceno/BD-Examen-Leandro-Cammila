@@ -1,0 +1,119 @@
+CREATE DATABASE Gym;
+USE Gym;
+
+-- 1.Clientes
+CREATE TABLE CLIENTES (
+	ClienteID INT PRIMARY KEY IDENTITY(1,1),
+	CI INT NOT NULL CHECK (CI > 0),
+	Nombre NVARCHAR(50) NOT NULL,
+	Apellido NVARCHAR(50) NOT NULL,
+	Telefono INT CHECK (Telefono BETWEEN 30000000 AND 79999999),
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	UNIQUE(Telefono),
+	UNIQUE(CI)
+);
+GO
+
+-- 2.Servicios
+CREATE TABLE SERVICIOS (
+	ServicioID INT PRIMARY KEY IDENTITY(1,1),
+	Nombre NVARCHAR(50) NOT NULL,
+	HoraInicio TIME(0) NOT NULL CHECK (HoraInicio BETWEEN '06:00:00' AND '23:00:00'),
+	HoraFin TIME(0) NOT NULL CHECK (HoraFin BETWEEN '06:00:00' AND '23:00:00'),
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	CONSTRAINT CK_HoraFinMayor CHECK (HoraFin > HoraInicio)
+);
+GO
+
+-- 3.Descuentos
+CREATE TABLE DESCUENTOS (
+	DescuentoID INT PRIMARY KEY IDENTITY(1,1),
+	Nombre NVARCHAR(50) NOT NULL,
+	Porcentaje INT NOT NULL CHECK (Porcentaje BETWEEN 0 AND 100),
+	FechaInicio DATE NOT NULL,
+	FechaFin DATE NOT NULL,
+	Estado NVARCHAR(10) NOT NULL DEFAULT 'Activo',
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	CONSTRAINT CK_DESCUENTOS_Fecha CHECK (FechaFin > FechaInicio)
+);
+GO
+
+-- tablas con foreign key
+-- 4.Inscripcion
+CREATE TABLE INSCRIPCION (
+	InscripcionID INT PRIMARY KEY IDENTITY(1,1),
+	ClienteID INT NOT NULL,
+	CantidadMeses INT NOT NULL CHECK (CantidadMeses BETWEEN 1 AND 12),
+	FechaInicio DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
+	FechaFin AS (DATEADD(MONTH, CantidadMeses, FechaInicio)) PERSISTED,
+	Mensualidad INT NOT NULL DEFAULT 250,
+	Subtotal AS (Mensualidad * CantidadMeses) PERSISTED,
+	DescuentoID INT,
+	Total DECIMAL(10,2) NOT NULL, 
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	FOREIGN KEY (ClienteID) REFERENCES CLIENTES(ClienteID),
+	FOREIGN KEY (DescuentoID) REFERENCES DESCUENTOS(DescuentoID)
+);
+GO
+
+-- 5.Inventario
+CREATE TABLE INVENTARIO (
+	EquipoID INT PRIMARY KEY IDENTITY(1,1),
+	ServicioID INT NOT NULL,
+	Nombre NVARCHAR(50) NOT NULL,
+	Cantidad INT NOT NULL CHECK (Cantidad > 0),
+	FechaAdquisicion DATE NOT NULL,
+	Estado NVARCHAR(50) NOT NULL CHECK (Estado IN ('Nuevo', 'En Uso', 'Mantenimiento', 'Mal Estado', 'Descontinuado')),
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	FOREIGN KEY(ServicioID) REFERENCES SERVICIOS(ServicioID)
+);
+GO
+
+-- 6.Entrenadores
+CREATE TABLE ENTRENADORES (
+	EntrenadorID INT PRIMARY KEY IDENTITY(1,1),
+	ServicioID INT NOT NULL,
+	CI INT NOT NULL CHECK (CI > 0),
+	Nombre NVARCHAR(50) NOT NULL,
+	Apellido NVARCHAR(50) NOT NULL,
+	Telefono INT NOT NULL CHECK (Telefono BETWEEN 30000000 AND 79999999),
+	Correo AS (LOWER(Nombre) + '.' + LOWER(Apellido) + '@entrenador.com') PERSISTED,
+	FechaInicio DATE NOT NULL,
+	FechaFin DATE,
+	Sueldo INT NOT NULL,
+	Turno NVARCHAR(50) NOT NULL CHECK (Turno IN ('Ma?ana', 'Tarde', 'Noche')),
+	Estado AS (
+		CASE WHEN FechaFin IS NULL THEN 'Activo'
+		ELSE 'Despedido'
+		END
+	) PERSISTED,
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	FOREIGN KEY(ServicioID) REFERENCES SERVICIOS(ServicioID),
+	CONSTRAINT CK_FechaFinMayor CHECK ((FechaFin IS NULL) OR (FechaFin > FechaInicio))
+);
+GO
+
+-- 7.Asistencia
+CREATE TABLE ASISTENCIA (
+	AsistenciaID INT PRIMARY KEY IDENTITY(1,1),
+	InscripcionID INT NOT NULL,
+	ServicioID INT NOT NULL,
+	Fecha DATE NOT NULL,
+	HoraIngreso TIME(0) NOT NULL CHECK (HoraIngreso BETWEEN '06:00:00' AND '23:00:00'),
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	UNIQUE(InscripcionID, Fecha),
+	FOREIGN KEY(InscripcionID) REFERENCES INSCRIPCION(InscripcionID),
+	FOREIGN KEY(ServicioID) REFERENCES SERVICIOS(ServicioID)
+);
+GO
+
+-- 8.Pagos
+CREATE TABLE PAGOS (
+	PagoID INT PRIMARY KEY IDENTITY(1,1),
+	InscripcionID INT NOT NULL,
+	Fecha DATE NOT NULL,
+	Monto INT NOT NULL CHECK (Monto >= 250),
+	ModifiedDate DATETIME NOT NULL DEFAULT GETDATE(),
+	FOREIGN KEY(InscripcionID) REFERENCES INSCRIPCION(InscripcionID)
+);
+GO
