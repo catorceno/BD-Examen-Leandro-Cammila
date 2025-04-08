@@ -117,7 +117,7 @@ def consultarDeuda(conn):
             cursor.execute("EXEC sp_consultar_deuda ?", ci)
             row = cursor.fetchone()
             if not row:
-                messagebox.showinfo("Sin datos", "No se encontraron datos de deuda.")
+                messagebox.showinfo("Sin datos", "No se encontraron datos de pagos.")
                 return
 
             # Etiquetas con los campos resultantes

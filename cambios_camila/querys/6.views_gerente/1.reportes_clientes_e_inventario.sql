@@ -74,7 +74,6 @@ CREATE VIEW vw_reporteEstadoMaquinasDetalle AS
 	FULL OUTER JOIN CTE_Mantenimiento m ON COALESCE(n.rn, e.rn) = m.rn
 	FULL OUTER JOIN CTE_MalEstado me ON COALESCE(n.rn, e.rn, m.rn) = me.rn
 	FULL OUTER JOIN CTE_Descontinuado d ON COALESCE(n.rn, e.rn, m.rn, me.rn) = d.rn
-	--ORDER BY row_num;
 SELECT * FROM vw_reportEstadoMaquinas
 SELECT * FROM vw_reporteEstadoMaquinasDetalle
 ORDER BY row_num;

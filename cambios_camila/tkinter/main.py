@@ -4,7 +4,6 @@ import connections
 import recepcionista.menu
 import gerente.menu
 import dba.menu
-
 import config_window
 
 def getUserRole(conn):

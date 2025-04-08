@@ -1,7 +1,7 @@
 USE Gym;
 GO
 
--- reporte inscripciones y descuentos
+-- 1.Reporte inscripciones y descuentos en resumen y detalle por descuento
 CREATE VIEW vw_inscripcionesDescuentos AS
 	SELECT 
 		SUM(CASE WHEN DescuentoID IS NOT NULL THEN 1 ELSE 0 END) as InscConDescuento,
@@ -18,3 +18,5 @@ CREATE VIEW vw_inscripcionesDescuentosDetalle AS
 	GROUP BY i.DescuentoID, d.Nombre, d.Porcentaje
 SELECT * FROM vw_inscripcionesDescuentos
 SELECT * FROM vw_inscripcionesDescuentosDetalle
+
+-- 2.Reporte impacto de descuentos en las inscripciones o en los ingresos? nose como podrias mostrar eso

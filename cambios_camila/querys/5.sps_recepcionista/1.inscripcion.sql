@@ -39,11 +39,6 @@ BEGIN
         INSERT INTO INSCRIPCION(ClienteID, CantidadMeses, FechaInicio, DescuentoID)
         VALUES (@ClienteID, @CantidadMeses, @FechaInicio, @DescuentoID);
 
-		DECLARE @InscripcionID INT = SCOPE_IDENTITY();
-
-		INSERT INTO PAGOS(InscripcionID, Fecha, Monto)
-		VALUES (@InscripcionID, @FechaInicio, 250)
-
         COMMIT TRANSACTION;
     END TRY
     BEGIN CATCH
@@ -95,11 +90,6 @@ BEGIN
         
         INSERT INTO INSCRIPCION(ClienteID, CantidadMeses, FechaInicio, DescuentoID)
         VALUES (@ClienteID, @CantidadMeses, @FechaInicio, @DescuentoID);
-
-		DECLARE @InscripcionID INT = SCOPE_IDENTITY();
-
-		INSERT INTO PAGOS(InscripcionID, Fecha, Monto)
-		VALUES (@InscripcionID, @FechaInicio, 250)
         
         COMMIT TRANSACTION;
     END TRY

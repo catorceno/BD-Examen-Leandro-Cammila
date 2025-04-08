@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import config_window
 from recepcionista import menu, inscripcion, pagos, asistencia
-from gerente import menu, ingresos
+from gerente import menu, reportes
 from dba import tablas
 
 def showMenu(root, conn):
@@ -32,8 +32,8 @@ def showMenu(root, conn):
 
     asist_frame = tk.LabelFrame(root, text="Ingresos", padx=10, pady=10)
     asist_frame.pack(pady=5, fill='x')
-    tk.Button(asist_frame, text="Reporte1", command=lambda: ingresos.reporteIngresos1(conn)).pack(fill="x")
-    tk.Button(asist_frame, text="Reporte2", command=lambda: ingresos.reporteIngresos2(conn)).pack(fill="x") 
+    tk.Button(asist_frame, text="Reporte1", command=lambda: reportes.reporteIngresos1(conn)).pack(fill="x")
+    tk.Button(asist_frame, text="Reporte2", command=lambda: reportes.reporteIngresos2(conn)).pack(fill="x") 
 
     tk.Label(root, text="Gestionar Tablas", font=(12, "bold")).pack(pady=10)
     tablas : list[str] = [
