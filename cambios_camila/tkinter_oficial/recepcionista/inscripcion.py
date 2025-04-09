@@ -3,7 +3,6 @@ from tkinter import ttk, messagebox
 from datetime import datetime
 import config_window
 
-
 def add_date_field(window, row, label_text="Fecha Inicio"):
     fecha_var = tk.StringVar()
     tk.Label(window, text=label_text).grid(
@@ -73,7 +72,6 @@ def add_discount_field(window, row, conn):
 
     return var_descuento, usar_sin_descuento
 
-
 def clienteNuevo(conn):
     window = tk.Toplevel()
     #config_window.centrar(window, 275, 360)
@@ -131,7 +129,6 @@ def clienteNuevo(conn):
     tk.Button(window, text="Guardar", command=on_save).grid(
         row=row, columnspan=2, pady=15
     )
-
 
 def clienteExistente(conn):
     window = tk.Toplevel()
