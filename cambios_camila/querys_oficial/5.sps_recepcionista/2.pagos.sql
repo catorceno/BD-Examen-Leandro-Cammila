@@ -1,7 +1,11 @@
 USE Gym;
 GO
 
--- 1.Boton Agregar Pago
+-- =========================================
+-- Author:      Camila Catorceno
+-- Create date: 2025-04-06
+-- Description: Boton Agregar Pago
+-- =========================================
 CREATE PROCEDURE sp_agregar_pago
     @CI INT,
     @Fecha DATE,
@@ -75,7 +79,11 @@ BEGIN
     END CATCH
 END
 
--- 2.Boton Buscar Pagos
+-- =========================================
+-- Author:      Camila Catorceno
+-- Create date: 2025-04-06
+-- Description: Boton Buscar Pagos
+-- =========================================
 CREATE PROCEDURE sp_buscar_pagos
     @CI INT
 AS

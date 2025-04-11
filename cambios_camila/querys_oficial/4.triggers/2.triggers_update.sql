@@ -1,7 +1,32 @@
 USE Gym;
 GO
 
--- Actualizar modifiedDate en todas las tablas
+-- 1.Actualizar Total
+CREATE TRIGGER trg_updateTotal
+ON INSCRIPCION
+AFTER UPDATE
+AS
+BEGIN
+	IF (SELECT CantidadMeses FROM deleted) <> (SELECT CantidadMeses FROM inserted)
+	OR (SELECT Mensualidad FROM deleted) <> (SELECT Mensualidad FROM inserted)
+	OR (SELECT DescuentoID FROM deleted) <> (SELECT DescuentoID FROM inserted)
+	BEGIN
+		UPDATE i
+		SET Total = i.Subtotal * (1 - d.Porcentaje / 100.0)
+		FROM INSCRIPCION i
+		INNER JOIN inserted ON i.InscripcionID = inserted.InscripcionID
+		INNER JOIN DESCUENTOS d ON inserted.DescuentoID = d.DescuentoID
+		WHERE inserted.DescuentoID IS NOT NULL; -- calcular Total con descuento
+
+		UPDATE i
+		SET Total = i.Subtotal
+		FROM INSCRIPCION i
+		INNER JOIN inserted ins ON i.InscripcionID = ins.InscripcionID
+		WHERE ins.DescuentoID IS NULL; -- calcular sin descuento
+	END
+END
+
+-- 2.Actualizar modifiedDate en todas las tablas
 -- 1.Clientes
 CREATE TRIGGER trg_clienteModifiedDate
 ON CLIENTES
@@ -50,7 +75,7 @@ BEGIN
     INNER JOIN inserted i2 ON i.InscripcionID = i2.InscripcionID;
 END;
 
--- 5.nventario
+-- 5.Inventario
 CREATE TRIGGER trg_inventarioModifiedDate
 ON INVENTARIO
 AFTER UPDATE

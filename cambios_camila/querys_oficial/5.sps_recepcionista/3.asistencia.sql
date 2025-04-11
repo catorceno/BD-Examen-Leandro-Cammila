@@ -1,8 +1,12 @@
 USE Gym;
 GO
 
--- 1.Boton Agregar Asistencia
-alter PROCEDURE sp_agregar_asistencia
+-- =========================================
+-- Author:      Camila Catorceno
+-- Create date: 2025-04-06
+-- Description: Boton Agregar Asistencia
+-- =========================================
+CREATE PROCEDURE sp_agregar_asistencia
     @CI INT,
     @Servicio NVARCHAR(50)
 AS
