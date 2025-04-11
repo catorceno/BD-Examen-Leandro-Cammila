@@ -1,5 +1,6 @@
 CREATE DATABASE Gym;
 USE Gym;
+GO
 
 -- 1.Clientes
 CREATE TABLE CLIENTES (
@@ -38,7 +39,6 @@ CREATE TABLE DESCUENTOS (
 );
 GO
 
--- tablas con foreign key
 -- 4.Inscripcion
 CREATE TABLE INSCRIPCION (
 	InscripcionID INT PRIMARY KEY IDENTITY(1,1),
@@ -81,7 +81,7 @@ CREATE TABLE ENTRENADORES (
 	FechaInicio DATE NOT NULL,
 	FechaFin DATE,
 	Sueldo INT NOT NULL,
-	Turno NVARCHAR(50) NOT NULL CHECK (Turno IN ('Ma?ana', 'Tarde', 'Noche')),
+	Turno NVARCHAR(50) NOT NULL CHECK (Turno IN ('Mañana', 'Tarde', 'Noche')),
 	Estado AS (
 		CASE WHEN FechaFin IS NULL THEN 'Activo'
 		ELSE 'Despedido'

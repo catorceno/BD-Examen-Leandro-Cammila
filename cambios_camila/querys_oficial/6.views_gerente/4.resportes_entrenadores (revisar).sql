@@ -1,4 +1,5 @@
 USE Gym;
+GO
 
 -- 1.Suma de sueldo por servicio y el total de gasto por sueldos
 CREATE VIEW vw_totalSueldos AS
@@ -26,5 +27,3 @@ CREATE VIEW vw_aPagarHoy AS
 	WHERE Estado = 'Activo'
 	AND FechaInicio = CAST(GETDATE() AS DATE)
 SELECT * FROM vw_aPagarHoy
-
--- 3.Entrenadores que estan de turno ahora

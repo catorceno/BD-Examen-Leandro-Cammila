@@ -229,7 +229,7 @@ def reporteAsistencias(conn):
     # Ejecutar la consulta para la vista vw_asistenciasPorHora
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM vw_asistenciasPorHora")
+        cursor.execute("SELECT * FROM vw_asistenciasPorHora ORDER BY CAST(LEFT(Hora, CHARINDEX(':', Hora) - 1) AS INT);")
         rows = cursor.fetchall()
         for row in rows:
             # row[0] = Hora (ejemplo "10:00") y row[1] = Asistencias
@@ -259,7 +259,7 @@ def reporteAsistencias(conn):
 
     # Ejecutar la consulta para la vista vw_rankingServicios
     try:
-        cursor.execute("SELECT * FROM vw_rankingServicios")
+        cursor.execute("SELECT * FROM vw_rankingServicios ORDER BY Asistencias DESC")
         rows = cursor.fetchall()
         for row in rows:
             # row[0] = Servicio y row[1] = Asistencias

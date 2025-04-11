@@ -114,19 +114,57 @@ def consultarDeuda(conn):
         try:
             ci = int(ci_var.get())
             cursor = conn.cursor()
+            # Intentamos obtener la información de deuda a través del stored procedure
             cursor.execute("EXEC sp_consultar_deuda ?", ci)
             row = cursor.fetchone()
-            if not row:
-                messagebox.showinfo("Sin datos", "No se encontraron datos de pagos.")
-                return
 
-            # Etiquetas con los campos resultantes
+            if row:
+                # Si se encontró un registro, nos aseguramos de que "Monto Pagado" (posición 7) no sea None
+                row = list(row)
+                if row[7] is None:
+                    row[7] = 0
+                datos = row
+            else:
+                # Si no se encontraron pagos, obtenemos información del cliente y su última inscripción
+                # Consulta la información básica del cliente
+                cursor.execute("SELECT CI, Nombre, Apellido, Telefono FROM CLIENTES WHERE CI = ?", ci)
+                client_info = cursor.fetchone()
+                if not client_info:
+                    messagebox.showinfo("Sin datos", "No se encontraron datos para este cliente.")
+                    return
+
+                # Consulta la última inscripción del cliente
+                cursor.execute("""
+                    SELECT TOP 1 i.FechaInicio, i.FechaFin, i.Total 
+                    FROM INSCRIPCION i
+                    INNER JOIN CLIENTES c ON i.ClienteID = c.ClienteID
+                    WHERE c.CI = ?
+                    ORDER BY i.InscripcionID DESC
+                    """, ci)
+                insc_info = cursor.fetchone()
+                if not insc_info:
+                    messagebox.showinfo("Sin datos", "El cliente no tiene inscripciones registradas.")
+                    return
+
+                # Armar la tupla con el siguiente orden:
+                # "CI", "Nombre", "Apellido", "Teléfono", "Fecha Inscripción", "Fecha Fin", "Total", "Monto Pagado", "Deuda"
+                # Como no hay pagos, se asume que el "Monto Pagado" es 0 y la "Deuda" es igual a Total.
+                fecha_inicio, fecha_fin, total = insc_info
+                datos = list(client_info) + [fecha_inicio, fecha_fin, total, 0, total]
+
+            # Lista de labels para mostrar en la interfaz
             labels = [
                 "CI", "Nombre", "Apellido", "Teléfono",
                 "Fecha Inscripción", "Fecha Fin",
                 "Total", "Monto Pagado", "Deuda"
             ]
-            for i, val in enumerate(row):
+            # Limpiar posibles etiquetas previas (opcional)
+            for widget in window.grid_slaves():
+                if int(widget.grid_info()["row"]) > 0:
+                    widget.destroy()
+
+            # Mostrar cada dato en la ventana
+            for i, val in enumerate(datos):
                 tk.Label(window, text=f"{labels[i]}:").grid(
                     row=i+1, column=0, padx=10, pady=2, sticky="e"
                 )
@@ -137,5 +175,4 @@ def consultarDeuda(conn):
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    tk.Button(window, text="Consultar", command=on_check)\
-      .grid(row=0, column=2, padx=10)
+    tk.Button(window, text="Consultar", command=on_check).grid(row=0, column=2, padx=10)
