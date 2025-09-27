@@ -1,3 +1,4 @@
+
 CREATE DATABASE Gym;
 USE Gym;
 GO
